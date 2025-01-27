@@ -49,7 +49,7 @@ begin
 		end if;
 	end process;
 	
-	process(current_state, ready_count)
+	process(current_state, ready_count, enable)
 	begin
 		case current_state is
 			when IDLE =>
