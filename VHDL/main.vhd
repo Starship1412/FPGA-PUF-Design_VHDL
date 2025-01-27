@@ -4,33 +4,35 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity main is
 	port (
-		clk : in STD_LOGIC;
-		en : in STD_LOGIC;
-		challenge : in STD_LOGIC_VECTOR(3 downto 0);
-		count_test : out STD_LOGIC_VECTOR(9 downto 0);
+		clk                : in STD_LOGIC;
+		en                 : in STD_LOGIC;
+		reset              : in STD_LOGIC;
+		challenge          : in STD_LOGIC_VECTOR(3 downto 0);
+		count_test         : out unsigned(7 downto 0);
+		current_state_test : out STD_LOGIC_VECTOR(1 downto 0);
 		counter_alarm1, counter_alarm2, comparator1, comparator2, comparator3, comparator4 : out STD_LOGIC
 	);
 end main;
 
 architecture Behavioral of main is
-	signal lock1, lock2, lock3, lock4, lock5, lock6, lock7, lock8 : STD_LOGIC := '0';
-	signal count1, count2, count3, count4, count5, count6, count7, count8 : STD_LOGIC_VECTOR(9 downto 0) := (others => '0');
+	signal count1, count2, count3, count4, count5, count6, count7, count8 : unsigned(7 downto 0) := to_unsigned(0, 8);
+	signal current_state1, current_state2, current_state3, current_state4, current_state5, current_state6, current_state7, current_state8 : STD_LOGIC_VECTOR(1 downto 0);
 	signal osc_counter1, osc_counter2, osc_counter3, osc_counter4, osc_counter5, osc_counter6, osc_counter7, osc_counter8, osc1, osc2, osc3, osc4, osc5, osc6, osc7, osc8, osc9, osc10, osc11, osc12, osc13, osc14, osc15, osc16, osc17, osc18, osc19, osc20, osc21, osc22, osc23, osc24, osc25, osc26, osc27, osc28, osc29, osc30, osc31, osc32, osc33, osc34, osc35, osc36, osc37, osc38, osc39, osc40, osc41, osc42, osc43, osc44, osc45, osc46, osc47, osc48, osc49, osc50, osc51, osc52, osc53, osc54, osc55, osc56, osc57, osc58, osc59, osc60, osc61, osc62, osc63, osc64, osc65, osc66, osc67, osc68, osc69, osc70, osc71, osc72, osc73, osc74, osc75, osc76, osc77, osc78, osc79, osc80, osc81, osc82, osc83, osc84, osc85, osc86, osc87, osc88, osc89, osc90, osc91, osc92, osc93, osc94, osc95, osc96, osc97, osc98, osc99, osc100, osc101, osc102, osc103, osc104, osc105, osc106, osc107, osc108, osc109, osc110, osc111, osc112, osc113, osc114, osc115, osc116, osc117, osc118, osc119, osc120, osc121, osc122, osc123, osc124, osc125, osc126, osc127, osc128 : STD_LOGIC;
-
+	
 	component ROF1
 		port ( -- Clock in ports
 			en : in std_logic;
 			osc : out std_logic
 		);
 	end component;
-
+	
 	component ROF2
 		port ( -- Clock in ports
 			en : in std_logic;
 			osc : out std_logic
 		);
 	end component;
-
+	
 	component ROF3
 		port ( -- Clock in ports
 			en : in std_logic;
@@ -44,15 +46,16 @@ architecture Behavioral of main is
 			osc : out std_logic
 		);
 	end component;
-
+	
 	component counter
 		port (
-			clk         : in STD_LOGIC;
-			enable      : in  STD_LOGIC;
-			osc_comein  : in STD_LOGIC;
-			challenge   : in STD_LOGIC_VECTOR(3 downto 0);
-			lock        : inout STD_LOGIC;
-			count       : inout STD_LOGIC_VECTOR(9 downto 0)
+			clk           : in STD_LOGIC;
+			enable        : in STD_LOGIC;
+			reset         : in STD_LOGIC;
+			osc_comein    : in STD_LOGIC;
+			challenge     : in STD_LOGIC_VECTOR(3 downto 0);
+			count         : inout unsigned(7 downto 0);
+			current_state : inout STD_LOGIC_VECTOR(1 downto 0)
 		);
 	end component;
 begin
@@ -188,7 +191,23 @@ begin
 	RO126 : ROF4 port map (en => en, osc => osc126);
 	RO127 : ROF4 port map (en => en, osc => osc127);
 	RO128 : ROF4 port map (en => en, osc => osc128);
-
+	COUNTER1 : counter port map (clk => clk, enable => en, reset => reset, osc_comein => osc_counter1, challenge => challenge, count => count1, current_state => current_state1);
+	COUNTER2 : counter port map (clk => clk, enable => en, reset => reset, osc_comein => osc_counter2, challenge => challenge, count => count2, current_state => current_state2);
+	COUNTER3 : counter port map (clk => clk, enable => en, reset => reset, osc_comein => osc_counter3, challenge => challenge, count => count3, current_state => current_state3);
+	COUNTER4 : counter port map (clk => clk, enable => en, reset => reset, osc_comein => osc_counter4, challenge => challenge, count => count4, current_state => current_state4);
+	COUNTER5 : counter port map (clk => clk, enable => en, reset => reset, osc_comein => osc_counter5, challenge => challenge, count => count5, current_state => current_state5);
+	COUNTER6 : counter port map (clk => clk, enable => en, reset => reset, osc_comein => osc_counter6, challenge => challenge, count => count6, current_state => current_state6);
+	COUNTER7 : counter port map (clk => clk, enable => en, reset => reset, osc_comein => osc_counter7, challenge => challenge, count => count7, current_state => current_state7);
+	COUNTER8 : counter port map (clk => clk, enable => en, reset => reset, osc_comein => osc_counter8, challenge => challenge, count => count8, current_state => current_state8);
+	comparator1 <= '1' when count1 > count2 else '0';
+	comparator2 <= '1' when count3 > count4 else '0';
+	comparator3 <= '1' when count5 > count6 else '0';
+	comparator4 <= '1' when count7 > count8 else '0';
+	counter_alarm1 <= '1' when count1 = count2 or count3 = count4 or count5 = count6 or count7 = count8 else '0';
+	counter_alarm2 <= '1' when count1 = 0 or count2 = 0 or count3 = 0 or count4 = 0 or count5 = 0 or count6 = 0 or count7 = 0 or count8 = 0 else '0';
+	count_test <= count1;
+	current_state_test <= current_state1;
+	
 	process(challenge)
 	begin
 		case challenge is
@@ -208,24 +227,6 @@ begin
 			when "1101" => osc_counter1 <= osc14; osc_counter2 <= osc30;  osc_counter3 <= osc46;  osc_counter4 <= osc62;  osc_counter5 <= osc78;  osc_counter6 <= osc94;  osc_counter7 <= osc110; osc_counter8 <= osc126;
 			when "1110" => osc_counter1 <= osc15; osc_counter2 <= osc31;  osc_counter3 <= osc47;  osc_counter4 <= osc63;  osc_counter5 <= osc79;  osc_counter6 <= osc95;  osc_counter7 <= osc111; osc_counter8 <= osc127;
 			when "1111" => osc_counter1 <= osc16; osc_counter2 <= osc32;  osc_counter3 <= osc48;  osc_counter4 <= osc64;  osc_counter5 <= osc80;  osc_counter6 <= osc96;  osc_counter7 <= osc112; osc_counter8 <= osc128;
-			when others => null;
 		end case;
 	end process;
-	
-	COUNTER1 : counter port map (clk => clk, enable => en, osc_comein => osc_counter1, challenge => challenge, lock => lock1, count => count1);
-	COUNTER2 : counter port map (clk => clk, enable => en, osc_comein => osc_counter2, challenge => challenge, lock => lock2, count => count2);
-	COUNTER3 : counter port map (clk => clk, enable => en, osc_comein => osc_counter3, challenge => challenge, lock => lock3, count => count3);
-	COUNTER4 : counter port map (clk => clk, enable => en, osc_comein => osc_counter4, challenge => challenge, lock => lock4, count => count4);
-	COUNTER5 : counter port map (clk => clk, enable => en, osc_comein => osc_counter5, challenge => challenge, lock => lock5, count => count5);
-	COUNTER6 : counter port map (clk => clk, enable => en, osc_comein => osc_counter6, challenge => challenge, lock => lock6, count => count6);
-	COUNTER7 : counter port map (clk => clk, enable => en, osc_comein => osc_counter7, challenge => challenge, lock => lock7, count => count7);
-	COUNTER8 : counter port map (clk => clk, enable => en, osc_comein => osc_counter8, challenge => challenge, lock => lock8, count => count8);
-	comparator1 <= '1' when unsigned(count1) > unsigned(count2) else '0';
-	comparator2 <= '1' when unsigned(count3) > unsigned(count4) else '0';
-	comparator3 <= '1' when unsigned(count5) > unsigned(count6) else '0';
-	comparator4 <= '1' when unsigned(count7) > unsigned(count8) else '0';
-	counter_alarm1 <= '1' when unsigned(count1) = unsigned(count2) or unsigned(count3) = unsigned(count4) or unsigned(count5) = unsigned(count6) or unsigned(count7) = unsigned(count8) else '0';
-	counter_alarm2 <= '1' when unsigned(count1) = 0 or unsigned(count2) = 0 or unsigned(count3) = 0 or unsigned(count4) = 0 or unsigned(count5) = 0 or unsigned(count6) = 0 or unsigned(count7) = 0 or unsigned(count8) = 0 else '0';
-	count_test <= count1;
-
 end Behavioral;
