@@ -19,17 +19,12 @@ architecture Behavioral of counter is
 	constant COUNTING : std_logic_vector(1 downto 0) := "01";
 	constant DONE : std_logic_vector(1 downto 0) := "10";
 	signal next_state : STD_LOGIC_VECTOR(1 downto 0);
-	signal prev_challenge : STD_LOGIC_VECTOR(3 downto 0);
 	signal next_count : unsigned(7 downto 0) := to_unsigned(0, 8);
 	signal ready_count, next_ready_count : unsigned(2 downto 0) := to_unsigned(0, 3);
 begin
-	process(reset, challenge, clk)
+	process(reset, clk)
 	begin
 		if reset = '1' then
-			current_state <= IDLE;
-			ready_count <= to_unsigned(0, ready_count'length);
-		elsif challenge /= prev_challenge then
-			prev_challenge <= challenge;
 			current_state <= IDLE;
 			ready_count <= to_unsigned(0, ready_count'length);
 		elsif rising_edge(clk) then
@@ -38,11 +33,9 @@ begin
 		end if;
 	end process;
 	
-	process(reset, challenge, osc_comein)
+	process(reset, osc_comein)
 	begin
 		if reset = '1' then
-			count <= to_unsigned(0, count'length);
-		elsif challenge /= prev_challenge then
 			count <= to_unsigned(0, count'length);
 		elsif rising_edge(osc_comein) then
 			count <= next_count;
@@ -65,16 +58,24 @@ begin
 				end if;
 				
 			when COUNTING =>
-				if ready_count < 5 then
-					next_ready_count <= ready_count + 1;
-					next_state <= COUNTING;
+				if reset = '0' then
+					if ready_count < 5 then
+						next_ready_count <= ready_count + 1;
+						next_state <= COUNTING;
+					else
+						next_ready_count <= ready_count;
+						next_state <= DONE;
+					end if;
 				else
-					next_ready_count <= ready_count;
-					next_state <= DONE;
+					next_state <= IDLE;
 				end if;
 				
 			when DONE =>
-				next_state <= DONE;
+				if reset = '0' then
+					next_state <= DONE;
+				else
+					next_state <= IDLE;
+				end if;
 				
 			when others => NULL;
 		end case;
@@ -87,7 +88,7 @@ begin
 				next_count <= to_unsigned(0, next_count'length);
 				
 			when COUNTING =>
-				if count < 255 then
+				if count < 256 then
 					next_count <= count + 1;
 				else
 					next_count <= count;

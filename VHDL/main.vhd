@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity main is
+entity main is -- Before changing the challenge, it is necessary to press reset once to reset.
 	port (
 		clk                : in STD_LOGIC;
 		en                 : in STD_LOGIC;
